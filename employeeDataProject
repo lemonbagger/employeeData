@@ -1,0 +1,289 @@
+namespace employeedata2;
+class Program
+{
+    static void Main(string[] args)
+    {
+        string fileLocation = "/Users/agrehan/Desktop/jobdetails.csv";
+        string[] allEmployeeData = File.ReadAllLines(fileLocation);
+
+
+        int numEmployeeDetails = allEmployeeData.Length - 1;
+
+        string[] employeeName = new string[numEmployeeDetails];
+        string[] departmentName = new string[numEmployeeDetails];
+        int[] employeeAge = new int[numEmployeeDetails];
+        int[] employeeSalary = new int[numEmployeeDetails];
+        int[] yearsOfService = new int[numEmployeeDetails];
+
+        for (int i = 1; i < allEmployeeData.Length; ++i)
+        {
+            string[] employeeDetails = allEmployeeData[i].Split(',');
+
+            employeeName[i - 1] = employeeDetails[0];
+            departmentName[i - 1] = employeeDetails[1];
+            employeeAge[i - 1] = int.Parse(employeeDetails[2]);
+            employeeSalary[i - 1] = int.Parse(employeeDetails[3]);
+            yearsOfService[i - 1] = int.Parse(employeeDetails[4]);
+
+        }
+
+        int menuChoice = 0;
+        while (menuChoice != -1)
+        {
+            Console.WriteLine();
+            Console.WriteLine("1 - View full employee list");
+            Console.WriteLine("2 - View details by employee");
+            Console.WriteLine("3 - View salary costs to organisation/department");
+            Console.WriteLine("4 - View highest/lowest earning employees");
+            Console.WriteLine("5 - View longest/shortest serving employees");
+            Console.WriteLine("6 - Add new employee details");
+            Console.WriteLine("7 - Exit EmployeeDetails");
+            Console.WriteLine();
+
+            Console.Write("Enter menu choice: ");
+            menuChoice = Int32.Parse(Console.ReadLine());
+
+            if (menuChoice == 1)
+            {
+                fullEmployeeList(employeeName);
+            }
+
+            else if (menuChoice == 2)
+            {
+                viewDetailsByEmployee(employeeName, departmentName, employeeAge, employeeSalary, yearsOfService, numEmployeeDetails);
+            }
+
+            else if (menuChoice == 3)
+            {
+                viewSalaryCosts(numEmployeeDetails, departmentName, employeeSalary);
+            }
+
+            else if (menuChoice == 4)
+            {
+                highestLowestEarner(numEmployeeDetails, employeeSalary, employeeName);
+            }
+
+            else if (menuChoice == 5)
+            {
+                longestShortestEmployment(yearsOfService, numEmployeeDetails, employeeName);
+            }
+
+            else if (menuChoice == 6)
+            {
+                addNewEmployeeDetails(fileLocation);
+            }
+
+            else if (menuChoice == 7)
+            {
+                Console.WriteLine("Goodbye!");
+                break;
+            }
+
+            else
+            {
+                Console.WriteLine("Invalid selection, please try again");
+                Console.ReadLine();
+            }
+        }
+
+    }
+    static void fullEmployeeList(string[] employeeName)
+    {
+        Console.WriteLine("Full Employee List:");
+        Console.WriteLine();
+
+        foreach (string name in employeeName)
+        {
+            Console.WriteLine(name);
+        }
+    }
+    static void viewDetailsByEmployee(string[] employeeName, string[] departmentName, int[] employeeAge, int[] employeeSalary, int[] yearsOfService, int numberOfRows )
+    {
+        Console.Write("Please enter employee name: ");
+        string enteredName = Console.ReadLine();
+
+
+        for (int rowNumber = 0; rowNumber < numberOfRows; ++rowNumber)
+        {
+            string employeeDept = departmentName[rowNumber];
+            int specificAge = employeeAge[rowNumber];
+            int specificSalary = employeeSalary[rowNumber];
+            int specificService = yearsOfService[rowNumber];
+
+            {
+                if (employeeName[rowNumber] == enteredName)
+                {
+                    Console.WriteLine("{0} works in the {1} department, they are {2} years old, their salary is ${3}, and they have worked here for {4} years.", enteredName, employeeDept, specificAge, specificSalary, specificService);
+                    Console.ReadLine();
+                }
+            }
+            Console.WriteLine();
+        }
+    }
+    static void viewSalaryCosts(int numberOfRows, string[] departmentName, int[] employeeSalary)
+    {
+        Console.WriteLine("View cost to...");
+        Console.WriteLine("1 - Department");
+        Console.WriteLine("2 - Organisation");
+        Console.Write("Enter choice: "); int costChoice = Int32.Parse(Console.ReadLine());
+
+        if (costChoice == 1)
+        {
+            int totalITSalary = 0;
+            int totalMarketingSalary = 0;
+            int totalEngineeringSalary = 0;
+            int totalFinanceSalary = 0;
+            int totalHRSalary = 0;
+            int totalOperationsSalary = 0;
+
+
+            for (int rowNumber = 0; rowNumber < numberOfRows; ++rowNumber)
+            {
+                if (departmentName[rowNumber] == "Information Technology")
+                {
+                    totalITSalary += employeeSalary[rowNumber];
+                }
+
+                else if (departmentName[rowNumber] == "Marketing")
+                {
+                    totalMarketingSalary += employeeSalary[rowNumber];
+                }
+
+                else if (departmentName[rowNumber] == "Engineering")
+                {
+                    totalEngineeringSalary += employeeSalary[rowNumber];
+                }
+
+                else if (departmentName[rowNumber] == "Finance")
+                {
+                    totalFinanceSalary += employeeSalary[rowNumber];
+                }
+
+                else if (departmentName[rowNumber] == "Human Resources")
+                {
+                    totalHRSalary += employeeSalary[rowNumber];
+                }
+
+                else if (departmentName[rowNumber] == "Operations")
+                {
+                    totalOperationsSalary += employeeSalary[rowNumber];
+                }
+
+            }
+
+            Console.WriteLine("IT costs ${0} in wages", totalITSalary);
+            Console.WriteLine("Marketing costs ${0} in wages", totalMarketingSalary);
+            Console.WriteLine("Engineering costs ${0} in wages", totalEngineeringSalary);
+            Console.WriteLine("Finance costs ${0} in wages", totalFinanceSalary);
+            Console.WriteLine("HR costs ${0} in wages", totalHRSalary);
+            Console.WriteLine("Operations costs ${0} in wages", totalOperationsSalary);
+        }
+
+        else if (costChoice == 2)
+        {
+            int totalJobSalary = 0;
+
+            for (int rowNumber = 0; rowNumber < numberOfRows; ++rowNumber)
+            {
+                totalJobSalary += employeeSalary[rowNumber];
+            }
+
+            Console.WriteLine("All jobs in the orginisation cost ${0}", totalJobSalary);
+            Console.ReadLine();
+        }
+
+    }
+    static void highestLowestEarner(int numberOfRows, int[] employeeSalary, string[] employeeName)
+    {
+        int highestWage = -1;
+        string highestEarner = null;
+
+        for (int rowNumber = 0; rowNumber < numberOfRows; ++rowNumber)
+        {
+            if (employeeSalary[rowNumber] > highestWage)
+            {
+                highestEarner = employeeName[rowNumber];
+                highestWage = employeeSalary[rowNumber];
+            }
+        }
+
+        int lowestWage = int.MaxValue;
+        string lowestEarner = null;
+
+        for (int rowNumber = 0; rowNumber < numberOfRows; ++rowNumber)
+        {
+            if (employeeSalary[rowNumber] < lowestWage)
+            {
+                lowestEarner = employeeName[rowNumber];
+                lowestWage = employeeSalary[rowNumber];
+            }
+        }
+        Console.WriteLine("The highest earner is {0}, they make ${1}", highestEarner, highestWage);
+        Console.WriteLine("The lowest earner is {0}, they make ${1}", lowestEarner, lowestWage);
+        Console.ReadLine();
+    }
+    static void longestShortestEmployment(int[] yearsOfService, int numberOfRows, string[] employeeName)
+    {
+        int longestService = -1;
+        string longestServingName = null;
+
+        for (int rowNumber = 0; rowNumber < numberOfRows; ++rowNumber)
+        {
+            if (yearsOfService[rowNumber] > longestService)
+            {
+                longestServingName = employeeName[rowNumber];
+                longestService = yearsOfService[rowNumber];
+            }
+
+        }
+
+        int shortestService = 100;
+        string shortestServingName = null;
+
+        for (int rowNumber = 0; rowNumber < numberOfRows; ++rowNumber)
+        {
+            if (yearsOfService[rowNumber] < shortestService)
+            {
+                shortestServingName = employeeName[rowNumber];
+                shortestService = yearsOfService[rowNumber];
+            }
+
+        }
+        Console.WriteLine("{0} is the longest serving employee, they have worked for {1} years", longestServingName, longestService);
+        Console.WriteLine("{0} is the shortest serving employee, they have worked for {1} years", shortestServingName, shortestService);
+        Console.ReadLine();
+       
+    }
+    static void addNewEmployeeDetails(string fileLocation)
+    {
+        string newNameEntry = null;
+        string newDeptEntry = null;
+        int newAgeEntry = -1;
+        int newSalaryEntry = -1;
+        int newServiceEntry = -1;
+        int confirmDetailsChoice = 0;
+
+
+        Console.Write("Please enter new employee name: ");
+        newNameEntry = Console.ReadLine();
+
+        Console.Write("Please enter {0}'s department: ", newNameEntry);
+        newDeptEntry = Console.ReadLine();
+
+        Console.Write("Please enter {0}'s age: ", newNameEntry);
+        newAgeEntry = Int32.Parse(Console.ReadLine());
+
+        Console.Write("Please enter {0}'s salary: ", newNameEntry);
+        newSalaryEntry = Int32.Parse(Console.ReadLine());
+
+        Console.Write("Please enter {0}'s years of service: ", newNameEntry);
+        newServiceEntry = Int32.Parse(Console.ReadLine());
+
+        Console.WriteLine("{0} is {1} years old, they work in {2}, their salary is ${3}, and they have worked here for {4} years", newNameEntry, newDeptEntry, newSalaryEntry, newServiceEntry);
+
+        StreamWriter filewriter = new StreamWriter(fileLocation, append: true);
+        filewriter.Write(Environment.NewLine + newNameEntry + "," + newDeptEntry + "," + newAgeEntry + "," + newSalaryEntry + "," + newServiceEntry);
+        filewriter.Dispose();
+
+    }
+}
